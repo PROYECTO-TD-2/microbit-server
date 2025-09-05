@@ -16,30 +16,25 @@ def get_exercises(data):
     student_level = data.get("student_level", "unknown")
     exercise_context = data.get("exercise_context", "unknown")
 
-    prompt = f"""
-  Eres un profesor de ciencias y matematicas que recibe datos y contexto de sensores que usaron los alumnos para medir del ambiente:
-  Sensor: {sensor}
-  Valores: {values}
-  Unidad de medida del sensor: {units}
-  Nivel de los estudiantes: {student_level}
-  Contexto del ejercicio: {exercise_context}
 
-Responde en formato JSON con los ejercicios matematicos que los estudiantes deberan resolver segun su nivel. Responde con la siguiente estructura:
-[
-  
-    "pregunta": "¿Cuánto es la suma de los valores medidos?",
-    "opciones": ["Opcion1", "Opcion2", "Opcion3"],
-    "respuesta": "Opcion1"
-  
+    message = [
+        ('system',"Eres un profesor de ciencias y matemáticas que genera ejercicios educativos en formato JSON. Para generar los ejercios debes basrte unicamente n los libros. Es un verdadero tutor de matematica presenta ejercicios resueltos para que fijes tecnicas operatorias y metodos de razonamiento. La redaccion detallada de las soluciones te servira de modelo para los ejercicios que tu realices. "),
+        ('human',f"""
+        Sensor: {sensor}
+        Valores: {values}
+        Unidad: {units}
+        Nivel: {student_level}
+        Contexto: {exercise_context}
 
-
-    "pregunta": "Por que los valores estan en descenso?",
-    "opciones": ["Opcion1", "Opcion2", "Opcion3"],
-    "respuesta": "Opcion1"
-  
-]
-
-las preguntas deben estar relacionadas con el contexto del ejercicio y los datos proporcionados por los estudiantes. Esto con el proposito de que los estudiantes puedan conectar mejor la teoria con la realidad.
-    """
-    response = model.invoke(prompt)
+        Genera ejercicios matemáticos en JSON siguiendo esta estructura:
+        [
+          {{
+            "pregunta": "...",
+            "opciones": ["...", "...", "..."],
+            "respuesta": "..."
+          }}
+        ]
+        """)
+    ]
+    response = model.invoke(message)
     return response.content
